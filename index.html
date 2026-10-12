@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 		<title>Trainways Chapter One</title>
 		<style>
 html, body, #canvas {
@@ -94,8 +94,41 @@ body {
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
 <link rel="manifest" href="index.manifest.json">
 
-	</head>
+	<style id="trainways-safe-area-style">
+/* The browser shell owns available display space; Godot owns game layout. */
+:root {
+  --trainways-safe-top: env(safe-area-inset-top, 0px);
+  --trainways-safe-right: env(safe-area-inset-right, 0px);
+  --trainways-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --trainways-safe-left: env(safe-area-inset-left, 0px);
+  --trainways-edge-gap: 0px;
+}
+@media (pointer: coarse) {
+  :root { --trainways-edge-gap: 12px; }
+}
+html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
+#game-viewport {
+  position: absolute;
+  left: var(--trainways-view-left, 0px);
+  top: var(--trainways-view-top, 0px);
+  width: var(--trainways-view-width, 100%);
+  height: var(--trainways-view-height, 100%);
+  box-sizing: border-box;
+  padding: max(var(--trainways-safe-top), var(--trainways-edge-gap))
+    max(var(--trainways-safe-right), var(--trainways-edge-gap))
+    max(var(--trainways-safe-bottom), var(--trainways-edge-gap))
+    max(var(--trainways-safe-left), var(--trainways-edge-gap));
+}
+#game-surface { position: relative; width: 100%; height: 100%; overflow: hidden; }
+#game-surface #canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+#game-surface #status { overflow-y: auto; touch-action: pan-y; }
+#home-screen-tip { font-size: 14px; }
+@media (display-mode: standalone) { #home-screen-tip { display: none; } }
+
+</style>
+</head>
 	<body>
+<div id="game-viewport"><div id="game-surface">
 		<canvas id="canvas">
 			Your browser does not support the canvas tag.
 		</canvas>
@@ -105,15 +138,73 @@ body {
 		</noscript>
 
 		<div id="status">
-<div id="launch-panel"><h1>Trainways</h1><h2>Chapter One � iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 38 MB.</p><p>Tap Play, then finish the railway and select All aboard!</p><button id="play-test">Play Chapter One</button></div>
+<div id="launch-panel"><h1>Trainways</h1><h2>Chapter One � iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 38 MB.</p><p>Tap Play, then finish the railway and select All aboard!</p><p id="home-screen-tip">On iPhone: Share → Add to Home Screen, enable Open as Web App if shown, then launch the Trainways icon for more room to play.</p><button id="play-test">Play Chapter One</button></div>
 			
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
 
-		<script src="index.js"></script>
+		</div></div>
+<script id="trainways-safe-area-script">
+/* Use Godot's documented external canvas sizing policy. No camera changes. */
+(() => {
+  const viewport = document.getElementById('game-viewport');
+  const surface = document.getElementById('game-surface');
+  const canvas = document.getElementById('canvas');
+  let frame = 0;
+  let pixelRatioQuery;
+
+  function resize() {
+    frame = 0;
+    const view = window.visualViewport;
+    const values = {
+      left: view ? view.pageLeft : 0,
+      top: view ? view.pageTop : 0,
+      width: view ? view.width : window.innerWidth,
+      height: view ? view.height : window.innerHeight,
+    };
+    for (const [key, value] of Object.entries(values)) {
+      const name = `--trainways-view-${key}`;
+      const next = `${value}px`;
+      if (viewport.style.getPropertyValue(name) !== next) viewport.style.setProperty(name, next);
+    }
+    const bounds = surface.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.floor(bounds.width * ratio));
+    const height = Math.max(1, Math.floor(bounds.height * ratio));
+    // Reassigning an unchanged canvas size can clear it. Only write real changes.
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+  }
+
+  function schedule() {
+    if (!frame) frame = requestAnimationFrame(resize);
+  }
+
+  function watchPixelRatio() {
+    if (pixelRatioQuery) pixelRatioQuery.removeEventListener('change', pixelRatioChanged);
+    pixelRatioQuery = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    pixelRatioQuery.addEventListener('change', pixelRatioChanged);
+  }
+
+  function pixelRatioChanged() { watchPixelRatio(); schedule(); }
+
+  new ResizeObserver(schedule).observe(surface);
+  window.addEventListener('resize', schedule);
+  window.addEventListener('pageshow', schedule);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', schedule);
+    window.visualViewport.addEventListener('scroll', schedule);
+  }
+  if (navigator.standalone) document.getElementById('home-screen-tip')?.remove();
+  watchPixelRatio();
+  resize();
+})();
+
+</script>
+<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":51242664,"index.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":51242664,"index.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
