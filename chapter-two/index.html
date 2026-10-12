@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+		<title>Trainways Chapter Two</title>
+		<style>
+html, body, #canvas {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	color: white;
+	background-color: black;
+	overflow: hidden;
+	touch-action: none;
+}
+
+#canvas {
+	display: block;
+}
+
+#canvas:focus {
+	outline: none;
+}
+
+#status, #status-splash, #status-progress {
+	position: absolute;
+	left: 0;
+	right: 0;
+}
+
+#status, #status-splash {
+	top: 0;
+	bottom: 0;
+}
+
+#status {
+	background-color: #242424;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	visibility: hidden;
+}
+
+#status-splash {
+	max-height: 100%;
+	max-width: 100%;
+	margin: auto;
+}
+
+#status-splash.show-image--false {
+	display: none;
+}
+
+#status-splash.fullsize--true {
+	height: 100%;
+	width: 100%;
+	object-fit: contain;
+}
+
+#status-splash.use-filter--false {
+	image-rendering: pixelated;
+}
+
+#status-progress, #status-notice {
+	display: none;
+}
+
+#status-progress {
+	bottom: 10%;
+	width: 50%;
+	margin: 0 auto;
+}
+
+#status-notice {
+	background-color: #5b3943;
+	border-radius: 0.5rem;
+	border: 1px solid #9b3943;
+	color: #e0e0e0;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	line-height: 1.3;
+	margin: 0 2rem;
+	overflow: hidden;
+	padding: 1rem;
+	text-align: center;
+	z-index: 1;
+}
+		#status {visibility:visible;background:#fffbed;color:#294956;font-family:system-ui;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-sizing:border-box} #launch-panel {max-width:580px} #launch-panel h1 {font-size:36px;margin:0} #launch-panel h2 {font-size:20px;font-weight:500} #play-test {background:#b9d8df;color:#294956;border:1px solid #6a8994;border-radius:12px;padding:18px 35px;font:600 20px system-ui;cursor:pointer} #status-notice {color:#294956;background:transparent} #status-progress {width:min(80vw,440px);margin:20px} </style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+<link rel="manifest" href="index.manifest.json">
+
+	<style id="trainways-safe-area-style">
+/* The browser shell owns available display space; Godot owns game layout. */
+:root {
+  --trainways-safe-top: env(safe-area-inset-top, 0px);
+  --trainways-safe-right: env(safe-area-inset-right, 0px);
+  --trainways-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --trainways-safe-left: env(safe-area-inset-left, 0px);
+  --trainways-edge-gap: 0px;
+}
+@media (pointer: coarse) {
+  :root { --trainways-edge-gap: 12px; }
+}
+html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; }
+#game-viewport {
+  position: absolute;
+  left: var(--trainways-view-left, 0px);
+  top: var(--trainways-view-top, 0px);
+  width: var(--trainways-view-width, 100%);
+  height: var(--trainways-view-height, 100%);
+  box-sizing: border-box;
+  padding: max(var(--trainways-safe-top), var(--trainways-edge-gap))
+    max(var(--trainways-safe-right), var(--trainways-edge-gap))
+    max(var(--trainways-safe-bottom), var(--trainways-edge-gap))
+    max(var(--trainways-safe-left), var(--trainways-edge-gap));
+}
+#game-surface { position: relative; width: 100%; height: 100%; overflow: hidden; }
+#game-surface #canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+#game-surface #status { overflow-y: auto; touch-action: pan-y; }
+#home-screen-tip { font-size: 14px; }
+@media (display-mode: standalone) { #home-screen-tip { display: none; } }
+
+</style>
+</head>
+	<body>
+<div id="game-viewport"><div id="game-surface">
+		<canvas id="canvas">
+			Your browser does not support the canvas tag.
+		</canvas>
+
+		<noscript>
+			Your browser does not support JavaScript.
+		</noscript>
+
+		<div id="status">
+<div id="launch-panel"><h1>Trainways</h1><h2>Chapter Two · iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 36 MB.</p><p>Tap Play, then build stations, connect the railway and choose your trains.</p><p id="save-note">Use Menu: Save railway, then Continue saved railway next time. Saves stay in this browser on this device. Avoid private browsing and clearing website data.</p><p id="home-screen-tip">On iPhone: Share → Add to Home Screen, enable Open as Web App if shown, then launch the Trainways icon for more room to play.</p><button id="play-test">Play Chapter Two</button></div>
+			
+			<progress id="status-progress"></progress>
+			<div id="status-notice"></div>
+		</div>
+
+		</div></div>
+<script id="trainways-safe-area-script">
+/* Use Godot's documented external canvas sizing policy. No camera changes. */
+(() => {
+  const viewport = document.getElementById('game-viewport');
+  const surface = document.getElementById('game-surface');
+  const canvas = document.getElementById('canvas');
+  let frame = 0;
+  let pixelRatioQuery;
+
+  function resize() {
+    frame = 0;
+    const view = window.visualViewport;
+    const values = {
+      left: view ? view.pageLeft : 0,
+      top: view ? view.pageTop : 0,
+      width: view ? view.width : window.innerWidth,
+      height: view ? view.height : window.innerHeight,
+    };
+    for (const [key, value] of Object.entries(values)) {
+      const name = `--trainways-view-${key}`;
+      const next = `${value}px`;
+      if (viewport.style.getPropertyValue(name) !== next) viewport.style.setProperty(name, next);
+    }
+    const bounds = surface.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    const width = Math.max(1, Math.floor(bounds.width * ratio));
+    const height = Math.max(1, Math.floor(bounds.height * ratio));
+    // Reassigning an unchanged canvas size can clear it. Only write real changes.
+    if (canvas.width !== width) canvas.width = width;
+    if (canvas.height !== height) canvas.height = height;
+  }
+
+  function schedule() {
+    if (!frame) frame = requestAnimationFrame(resize);
+  }
+
+  function watchPixelRatio() {
+    if (pixelRatioQuery) pixelRatioQuery.removeEventListener('change', pixelRatioChanged);
+    pixelRatioQuery = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+    pixelRatioQuery.addEventListener('change', pixelRatioChanged);
+  }
+
+  function pixelRatioChanged() { watchPixelRatio(); schedule(); }
+
+  new ResizeObserver(schedule).observe(surface);
+  window.addEventListener('resize', schedule);
+  window.addEventListener('pageshow', schedule);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', schedule);
+    window.visualViewport.addEventListener('scroll', schedule);
+  }
+  if (navigator.standalone) document.getElementById('home-screen-tip')?.remove();
+  watchPixelRatio();
+  resize();
+})();
+
+</script>
+<script src="index.js"></script>
+		<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":57053064,"index.wasm":37900721},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_THREADS_ENABLED = false;
+const engine = new Engine(GODOT_CONFIG);
+
+document.getElementById('play-test').addEventListener('click', function () {
+ document.getElementById('launch-panel').innerHTML='<h1>Loading Chapter Two</h1><p>First download: about 36 MB. Please keep this page open.</p>';
+	const statusOverlay = document.getElementById('status');
+	const statusProgress = document.getElementById('status-progress');
+	const statusNotice = document.getElementById('status-notice');
+
+	let initializing = true;
+	let statusMode = '';
+
+	function setStatusMode(mode) {
+		if (statusMode === mode || !initializing) {
+			return;
+		}
+		if (mode === 'hidden') {
+			statusOverlay.remove();
+			initializing = false;
+			return;
+		}
+		statusOverlay.style.visibility = 'visible';
+		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		statusMode = mode;
+	}
+
+	function setStatusNotice(text) {
+		while (statusNotice.lastChild) {
+			statusNotice.removeChild(statusNotice.lastChild);
+		}
+		const lines = text.split('\n');
+		lines.forEach((line) => {
+			statusNotice.appendChild(document.createTextNode(line));
+			statusNotice.appendChild(document.createElement('br'));
+		});
+	}
+
+	function displayFailureNotice(err) {
+		console.error(err);
+		if (err instanceof Error) {
+			setStatusNotice(err.message);
+		} else if (typeof err === 'string') {
+			setStatusNotice(err);
+		} else {
+			setStatusNotice('An unknown error occurred.');
+		}
+		setStatusMode('notice');
+		initializing = false;
+	}
+
+	const missing = Engine.getMissingFeatures({
+		threads: GODOT_THREADS_ENABLED,
+	});
+
+	if (missing.length !== 0) {
+		if (GODOT_CONFIG['serviceWorker'] && GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] && 'serviceWorker' in navigator) {
+			let serviceWorkerRegistrationPromise;
+			try {
+				serviceWorkerRegistrationPromise = navigator.serviceWorker.getRegistration();
+			} catch (err) {
+				serviceWorkerRegistrationPromise = Promise.reject(new Error('Service worker registration failed.'));
+			}
+			// There's a chance that installing the service worker would fix the issue
+			Promise.race([
+				serviceWorkerRegistrationPromise.then((registration) => {
+					if (registration != null) {
+						return Promise.reject(new Error('Service worker already exists.'));
+					}
+					return registration;
+				}).then(() => engine.installServiceWorker()),
+				// For some reason, `getRegistration()` can stall
+				new Promise((resolve) => {
+					setTimeout(() => resolve(), 2000);
+				}),
+			]).then(() => {
+				// Reload if there was no error.
+				window.location.reload();
+			}).catch((err) => {
+				console.error('Error while registering service worker:', err);
+			});
+		} else {
+			// Display the message as usual
+			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+			displayFailureNotice(missingMsg + missing.join('\n'));
+		}
+	} else {
+		setStatusMode('progress');
+		engine.startGame({
+			'onProgress': function (current, total) {
+				if (current > 0 && total > 0) {
+					statusProgress.value = current;
+					statusProgress.max = total;
+				} else {
+					statusProgress.removeAttribute('value');
+					statusProgress.removeAttribute('max');
+				}
+			},
+		}).then(() => {
+			setStatusMode('hidden');
+		}, displayFailureNotice);
+	}
+}, {once:true});
+		</script>
+	</body>
+</html>
+
