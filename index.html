@@ -105,7 +105,7 @@ body {
 		</noscript>
 
 		<div id="status">
-<div id="launch-panel"><h1>Trainways</h1><h2>Chapter One � iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is up to 91 MB.</p><p>Tap Play, then finish the railway and select All aboard!</p><button id="play-test">Play Chapter One</button></div>
+<div id="launch-panel"><h1>Trainways</h1><h2>Chapter One � iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 38 MB.</p><p>Tap Play, then finish the railway and select All aboard!</p><button id="play-test">Play Chapter One</button></div>
 			
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
@@ -118,7 +118,7 @@ const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
 document.getElementById('play-test').addEventListener('click', function () {
- document.getElementById('launch-panel').innerHTML='<h1>Loading Chapter One</h1><p>First download: up to 91 MB. Please keep this page open.</p>';
+ document.getElementById('launch-panel').innerHTML='<h1>Loading Chapter One</h1><p>First download: about 38 MB. Please keep this page open.</p>';
 	const statusOverlay = document.getElementById('status');
 	const statusProgress = document.getElementById('status-progress');
 	const statusNotice = document.getElementById('status-notice');
