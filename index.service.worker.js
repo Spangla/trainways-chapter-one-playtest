@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1791829162|4277161|shell-d0274fb1c4d0';
+const CACHE_VERSION = '1791884806|4555117|shell-8eeede57f84a';
 /** @type {string} */
 const CACHE_PREFIX = 'Trainways Chapte-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
