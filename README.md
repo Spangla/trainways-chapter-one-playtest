@@ -1,7 +1,7 @@
 # Trainways playtests
 
-- [Chapter One](https://spangla.github.io/trainways-chapter-one-playtest/) — build 24.3.
-- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) — build 35.9.
+- [Chapter One](https://spangla.github.io/trainways-chapter-one-playtest/) â€” build 24.5.
+- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) â€” build 35.17.
 
 On iPhone, open each link in Safari, choose Share > Add to Home Screen (Open as Web App if offered), then open its icon in landscape. Close and reopen an existing app to activate an update. Physical iPhone testing of the shared safe-area layout remains pending.
 
