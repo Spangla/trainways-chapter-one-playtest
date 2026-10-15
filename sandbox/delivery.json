@@ -1,0 +1,23 @@
+{
+  "build": "0.1.0-sandbox.1",
+  "experience": "Countryside Sandbox",
+  "sha256": {
+    "index.144x144.png": "dd6c8160803a3cbe5fee065df24ef1d5548bcf9ca7ced51385c31db2285c37e6",
+    "index.180x180.png": "35a29b165bf6a0f8911f52816d3c582231c8bda204b85c4ce4716ed776f73860",
+    "index.512x512.png": "82e90e2c3078f17de747584240577c4e0f29d65abe9229c130fed5a918a420c3",
+    "index.apple-touch-icon.png": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5",
+    "index.audio.position.worklet.js": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
+    "index.audio.worklet.js": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
+    "index.html": "62ef44fa28d346e3a4aa76b718f24e2ef0397e6c4368f0c8397a728291b97472",
+    "index.icon.png": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5",
+    "index.js": "68586d6daafc93c6e697b3fb258976874aa7459b8931165ebb1dc3c9614cc42c",
+    "index.manifest.json": "e52437fbec7c99687dd39d74c6c2e0e986080d9ed9c908a498f2a4ae32aa2341",
+    "index.offline.html": "b0a5d443e78f58717adac780bac91c1431bfa3b801c41f4707d507fb5ad2e47f",
+    "index.pck": "c3803bed228e250b88c93cd1c0ef48fcefa0d76ebcf548d1b589917b165f682a",
+    "index.png": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",
+    "index.service.worker.js": "b062cbaef637da99dd6fcb4e426ee1cacc78bc6d8609b8e907e45b3589551239",
+    "index.wasm": "35116f68540ac41acf7d71ea457added91b5e960a9cca3e2acc72918eaf01277"
+  },
+  "physical_device_validated": false,
+  "browser": "Chromium desktop, mouse and emulated touch"
+}
