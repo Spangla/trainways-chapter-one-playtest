@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1793128745|17842674|shell-c9be39b09eb6';
+const CACHE_VERSION = '1793217166|36330423|shell-b97f97073d66';
 /** @type {string} */
 const CACHE_PREFIX = "Trainways-Chapter-Two-sw-cache-";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
@@ -17,7 +17,7 @@ const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = false;
 const CACHED_FILES = ["index.html","runtime-79d0e37f7ec87e22edf2.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","runtime-79d0e37f7ec87e22edf2.audio.worklet.js","runtime-79d0e37f7ec87e22edf2.audio.position.worklet.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
-const CACHEABLE_FILES = ["runtime-79d0e37f7ec87e22edf2.wasm","railway-f52c9c6796aa8b8b5439.pck"];
+const CACHEABLE_FILES = ["runtime-79d0e37f7ec87e22edf2.wasm","railway-35eb5d82b4461034c048.pck"];
 const FULL_CACHE = CACHED_FILES.concat(CACHEABLE_FILES);
 
 self.addEventListener('install', (event) => {
@@ -128,9 +128,20 @@ self.addEventListener(
 					}
 					return cached;
 				}
-				// Try network if don't have it in cache.
-				const response = await fetchAndCache(event, cache, isCacheable);
-				return response;
+				// Trainways: cached entry fallback for directory navigation.
+				try {
+					return await fetchAndCache(event, cache, isCacheable);
+				} catch (error) {
+					const requested = new URL(event.request.url);
+					const entry = new URL('index.html', self.registration.scope);
+					const directory = new URL('./', entry);
+					if (isNavigate && requested.origin === entry.origin &&
+						(requested.pathname === entry.pathname || requested.pathname === directory.pathname)) {
+						const fallback = await cache.match(entry.href);
+						if (fallback) return ENSURE_CROSSORIGIN_ISOLATION_HEADERS ? ensureCrossOriginIsolationHeaders(fallback) : fallback;
+					}
+					throw error;
+				}
 			})());
 		} else if (ENSURE_CROSSORIGIN_ISOLATION_HEADERS) {
 			event.respondWith((async () => {
