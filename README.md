@@ -1,7 +1,7 @@
 # Trainways playtests
 
-- [Chapter One](https://spangla.github.io/trainways-chapter-one-playtest/) â€” build 24.6.
-- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) â€” build 35.22.
+- [Chapter One](https://spangla.github.io/trainways-chapter-one-playtest/) — build 24.11.
+- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) — build 35.28.
 
 On iPhone, open each link in Safari, choose Share > Add to Home Screen (Open as Web App if offered), then open its icon in landscape. Close and reopen an existing app to activate an update. Physical iPhone testing of the shared safe-area layout remains pending.
 
@@ -18,3 +18,11 @@ Chapter Two 35.20: Menu > Report a problem copies one short message to paste int
 Chapter Two 35.21 includes the travelling timber loader from the Android game, alongside the latest Stationmaster, reporting and scenery-protection fixes. Choose Stations > Timber loading yard near the logging camp, connect its rails and run log wagons to a cargo station at the sawmill. Existing ordinary cargo stations do not automatically become loading yards. The browser slowdown/crash investigation remains open.
 
 Chapter Two 35.22 restores the accepted whole-map framing and fixes offline reopening of the folder link. Existing saved railways are preserved. Desktop checks include five moving trains, construction/Undo, station upgrades, train management, save/load and cached-install update/offline restart. The reported intermittent physical-device crash remains unconfirmed; this is not a Safari stability all-clear. To refresh a stuck installation, open the Chapter Two link with ?update=35.22 online, then close all Trainways windows and reopen. Do not clear website data.
+
+## Chapters 24.11 and 35.28
+
+Station access and open doorways, clearer building/management choices, bridge Place/Cancel, refunds and Close and remove, two wider construction zooms, optional station turning loops, and sawmill crane unloading with forklift handling. Cargo facilities now explain which options include machinery.
+
+Chapter Two starts a new saved-railway slot for the revised town access layout; the previous save file is retained. Tests include Android touch controls, a complete loading/unloading/handler cycle with save/reload, rendering parity and desktop-browser offline reopening. These are targeted checks, not a physical-iPhone or unrestricted fleet stability guarantee.
+
+Open online, close all Trainways windows, then reopen. Check Settings or Menu for 24.11 / 35.28. Do not clear website data.
