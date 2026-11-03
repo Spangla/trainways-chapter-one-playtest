@@ -26,3 +26,9 @@ Station access and open doorways, clearer building/management choices, bridge Pl
 Chapter Two starts a new saved-railway slot for the revised town access layout; the previous save file is retained. Tests include Android touch controls, a complete loading/unloading/handler cycle with save/reload, rendering parity and desktop-browser offline reopening. These are targeted checks, not a physical-iPhone or unrestricted fleet stability guarantee.
 
 Open online, close all Trainways windows, then reopen. Check Settings or Menu for 24.11 / 35.28. Do not clear website data.
+
+## Chapter Two 35.29
+
+The picnic is the visible reward for the same first 24 logs delivered to the sawmill; it does not need another delivery or a coin balance. Placement guidance now follows the selected station or yard. Choose Stations > Cargo facilities > Timber loading yard for the logging crane, and Timber unloading yard for the sawmill crane and forklift. Existing plain platforms retain their equipment.
+
+Validated all four supported yard rotations and both entrance sides, both train directions in service contracts, and a complete freight/handling cycle on the connected Android phone. Physical iPhone and unrestricted fleet stability remain unverified. Open online, close all Trainways windows and reopen; Menu should show 35.29. Do not clear website data.
