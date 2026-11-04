@@ -1,6 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+<script>window.TRAINWAYS_DIAGNOSTICS_CONFIG={"chapter": "chapter-two", "build": "35.35-local-fixes-3", "gameKey": "trainways.diagnostics.v1.chapter_two_v35"};
+/* Local-only diagnostics. Loaded before the engine so startup failures survive. */
+(() => {
+  'use strict';
+  const config = window.TRAINWAYS_DIAGNOSTICS_CONFIG;
+  if (!config || window.TrainwaysDiagnostics) return;
+  const key = 'trainways.browser-diagnostics.v1.' + config.chapter;
+  const limit = 48, maxBytes = 65536;
+  let storageError = '', previous = null;
+  const bounded = value => String(value == null ? '' : value).slice(0, 600);
+  const bytes = value => new TextEncoder().encode(value).length;
+  function read(storageKey) {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      return raw && bytes(raw) <= maxBytes ? JSON.parse(raw) : null;
+    } catch (e) { storageError = bounded(e); return null; }
+  }
+  const retained = read(key);
+  if (retained && retained.schema_version === 1 && retained.current &&
+      Array.isArray(retained.current.events) && retained.current.events.length <= limit) {
+    previous = retained.current;
+  }
+  const current = {
+    id: Date.now() + '-' + Math.random().toString(36).slice(2, 10),
+    build: config.build, chapter: config.chapter, started_utc: new Date().toISOString(),
+    user_agent: navigator.userAgent.slice(0, 300),
+    standalone: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
+    navigation: (performance.getEntriesByType('navigation')[0] || {}).type || 'unknown',
+    was_discarded: document.wasDiscarded === true,
+    game_key: (previous && previous.game_key) || config.gameKey, events: [], last_problem: previous && previous.last_problem || null
+  };
+  function record(action, detail = '', problem = false) {
+    const event = {action: String(action).slice(0, 48), detail: bounded(detail), utc: new Date().toISOString(), build: config.build, session: current.id};
+    current.events.push(event);
+    if (current.events.length > limit) current.events.shift();
+    if (problem) current.last_problem = event;
+    try {
+      let json = JSON.stringify({schema_version: 1, current, previous});
+      while (bytes(json) > maxBytes && ((previous && previous.events.length) || current.events.length > 1)) {
+        if (previous && previous.events.length) previous.events.shift(); else current.events.shift();
+        json = JSON.stringify({schema_version: 1, current, previous});
+      }
+      if (bytes(json) > maxBytes) { storageError = 'Diagnostic storage bound exceeded.'; return; }
+      localStorage.setItem(key, json); storageError = '';
+    } catch (e) { storageError = bounded(e); }
+  }
+  function snapshot() {
+    return {schema_version: 1, current, previous, game: read(current.game_key), storage_error: storageError,
+      limits: 'No automatic sharing. Missing events do not prove a crash. The OS may terminate a browser without giving it a reason or a final event.'};
+  }
+  function summary() {
+    const problem = current.last_problem || (previous && previous.last_problem);
+    return 'Trainways problem report\nBuild: ' + config.build + '\n' + navigator.userAgent +
+      '\nLast browser problem: ' + (problem ? problem.action + ': ' + problem.detail : 'None captured; restart cause unknown.') +
+      (storageError ? '\nDiagnostic storage unavailable: ' + storageError : '') +
+      '\nPlease describe what happened and attach the detailed report.';
+  }
+  function download() {
+    const blob = new Blob([JSON.stringify(snapshot(), null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = 'trainways-problem-' + Date.now() + '.json';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+  window.TrainwaysDiagnostics = {
+    record, snapshot, summary, download,
+    attachGameKey(gameKey) { if (String(gameKey).startsWith('trainways.diagnostics.v1.')) { current.game_key = String(gameKey); record('game_journal_attached'); } },
+    exportJSON() { return JSON.stringify(snapshot()); }
+  };
+  window.addEventListener('error', event => {
+    const target = event.target;
+    if (target && target !== window && (target.src || target.href)) {
+      let resource = 'resource'; try { resource = new URL(target.src || target.href).pathname; } catch (_) {}
+      record('resource_error', resource, true);
+    } else record('javascript_error', event.error && event.error.stack || event.message || 'Unknown script error', true);
+  }, true);
+  window.addEventListener('unhandledrejection', event => record('unhandled_rejection', event.reason && event.reason.stack || event.reason, true));
+  window.addEventListener('pagehide', event => record('pagehide', 'persisted=' + event.persisted));
+  window.addEventListener('pageshow', event => record('pageshow', 'persisted=' + event.persisted));
+  document.addEventListener('visibilitychange', () => record('visibility', document.visibilityState));
+  document.addEventListener('freeze', () => record('freeze'));
+  document.addEventListener('resume', () => record('resume'));
+  record('page_start', 'navigation=' + current.navigation + '; discarded=' + current.was_discarded);
+  function setup() {
+    const canvas = document.getElementById('canvas');
+    if (canvas) {
+      canvas.addEventListener('webglcontextlost', event => record('webgl_context_lost', event.statusMessage || 'Graphics context lost', true));
+      canvas.addEventListener('webglcontextrestored', () => record('webgl_context_restored'));
+      canvas.addEventListener('webglcontextcreationerror', event => record('webgl_creation_error', event.statusMessage, true));
+    }
+    const play = document.getElementById('play-test');
+    if (!play) return;
+    play.addEventListener('click', () => record('play_requested'));
+    const box = document.createElement('details');
+    box.id = 'problem-report'; box.style.cssText = 'position:fixed;bottom:8px;left:12px;right:12px;max-height:85vh;overflow:auto;background:#fffbed;color:#294956;padding:10px;border:1px solid #6a8994;border-radius:10px;text-align:left;touch-action:pan-y;z-index:5';
+    const title = document.createElement('summary'); title.textContent = 'Report a problem'; box.appendChild(title);
+    const hint = document.createElement('p'); hint.textContent = 'If the game restarted, save this report before playing again. Nothing is sent automatically.'; box.appendChild(hint);
+    const text = document.createElement('textarea'); text.readOnly = true; text.rows = 7; text.style.cssText = 'width:100%;box-sizing:border-box;font-size:16px'; box.appendChild(text);
+    const save = document.createElement('button'); save.type = 'button'; save.style.cssText = 'min-height:44px;font-size:16px;margin:4px'; save.textContent = 'Save detailed report'; save.addEventListener('click', download); box.appendChild(save);
+    const copy = document.createElement('button'); copy.type = 'button'; copy.style.cssText = save.style.cssText; copy.textContent = 'Copy short report';
+    copy.addEventListener('click', async () => {
+      text.value = summary(); text.focus(); text.select();
+      try { await navigator.clipboard.writeText(text.value); copy.textContent = 'Copied'; }
+      catch (_) { copy.textContent = 'Select and copy the text above'; }
+    }); box.appendChild(copy);
+    box.addEventListener('toggle', () => { if (box.open) text.value = summary(); });
+    play.parentNode.parentNode.appendChild(box);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup, {once: true}); else setup();
+})();
+</script>
+
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 		<title>Trainways Chapter Two</title>
@@ -138,7 +249,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 		</noscript>
 
 		<div id="status">
-<div id="launch-panel"><h1>Trainways</h1><h2>Chapter Two · iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 51 MB.</p><p>Tap Play, then build stations, connect the railway and choose your trains.</p><p id="save-note">Chapter Two starts fresh for the expanded industries. New railways are saved normally.</p><p id="home-screen-tip">On iPhone: Share → Add to Home Screen, enable Open as Web App if shown, then launch the Trainways icon for more room to play.</p><button id="play-test">Play Chapter Two</button></div>
+<div id="launch-panel"><h1>Trainways</h1><h2>Chapter Two · iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 51 MB.</p><p>Tap Play, then build stations, connect the railway and choose your trains.</p><p id="save-note">Your saved railway is preserved. This update adds restart reports and improves cargo placement and return loops.</p><p id="home-screen-tip">On iPhone: Share → Add to Home Screen, enable Open as Web App if shown, then launch the Trainways icon for more room to play.</p><button id="play-test">Play Chapter Two</button></div>
 			
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
@@ -204,7 +315,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 </script>
 <script src="runtime-79d0e37f7ec87e22edf2.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"runtime-79d0e37f7ec87e22edf2","experimentalVK":false,"fileSizes":{"railway-b89450e5011754c3a4c9.pck":78648264,"runtime-79d0e37f7ec87e22edf2.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js","mainPack":"railway-b89450e5011754c3a4c9.pck"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"runtime-79d0e37f7ec87e22edf2","experimentalVK":false,"fileSizes":{"railway-b46ee03163f93487d94e.pck":78657816,"runtime-79d0e37f7ec87e22edf2.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js","mainPack":"railway-b46ee03163f93487d94e.pck"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
@@ -244,6 +355,7 @@ document.getElementById('play-test').addEventListener('click', function () {
 	}
 
 	function displayFailureNotice(err) {
+        window.TrainwaysDiagnostics.record("engine_start_failure",String(err),true);
 		console.error(err);
 		if (err instanceof Error) {
 			setStatusNotice(err.message);
@@ -304,7 +416,8 @@ document.getElementById('play-test').addEventListener('click', function () {
 				}
 			},
 		}).then(() => {
-			setStatusMode('hidden');
+			window.TrainwaysDiagnostics.record("engine_started");
+            setStatusMode('hidden');
 		}, displayFailureNotice);
 	}
 }, {once:true});

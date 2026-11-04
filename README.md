@@ -1,7 +1,7 @@
 # Trainways playtests
 
 - [Chapter One](https://spangla.github.io/trainways-chapter-one-playtest/) — build 24.11.
-- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) — build 35.28.
+- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) — build 35.35-local-fixes-3.
 
 On iPhone, open each link in Safari, choose Share > Add to Home Screen (Open as Web App if offered), then open its icon in landscape. Close and reopen an existing app to activate an update. Physical iPhone testing of the shared safe-area layout remains pending.
 
@@ -32,3 +32,9 @@ Open online, close all Trainways windows, then reopen. Check Settings or Menu fo
 The picnic is the visible reward for the same first 24 logs delivered to the sawmill; it does not need another delivery or a coin balance. Placement guidance now follows the selected station or yard. Choose Stations > Cargo facilities > Timber loading yard for the logging crane, and Timber unloading yard for the sawmill crane and forklift. Existing plain platforms retain their equipment.
 
 Validated all four supported yard rotations and both entrance sides, both train directions in service contracts, and a complete freight/handling cycle on the connected Android phone. Physical iPhone and unrestricted fleet stability remain unverified. Open online, close all Trainways windows and reopen; Menu should show 35.29. Do not clear website data.
+
+## Chapter Two restart reporting update — 4 November 2026
+
+Build 35.35-local-fixes-3 is the exact validated game pack. Restart diagnostics survive reload and can be downloaded from the launch page or Menu > Report a problem. Cargo placement uses the industry parcel; freight can return through a served station after using a sufficiently large return loop. Existing saves are preserved.
+
+Open online, close and reopen Trainways, and check the build in Menu. Do not clear website data. The iPad restart cause and the reported empty Appleby platform remain under investigation; no iPad stability all-clear is claimed.
