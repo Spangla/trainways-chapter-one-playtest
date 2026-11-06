@@ -1,7 +1,7 @@
 # Trainways playtests
 
 - [Chapter One](https://spangla.github.io/trainways-chapter-one-playtest/) — build 24.11.
-- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) — build 35.35-local-fixes-3.
+- [Chapter Two](https://spangla.github.io/trainways-chapter-one-playtest/chapter-two/) — build 35.36.
 
 On iPhone, open each link in Safari, choose Share > Add to Home Screen (Open as Web App if offered), then open its icon in landscape. Close and reopen an existing app to activate an update. Physical iPhone testing of the shared safe-area layout remains pending.
 
@@ -38,3 +38,9 @@ Validated all four supported yard rotations and both entrance sides, both train 
 Build 35.35-local-fixes-3 is the exact validated game pack. Restart diagnostics survive reload and can be downloaded from the launch page or Menu > Report a problem. Cargo placement uses the industry parcel; freight can return through a served station after using a sufficiently large return loop. Existing saves are preserved.
 
 Open online, close and reopen Trainways, and check the build in Menu. Do not clear website data. The iPad restart cause and the reported empty Appleby platform remain under investigation; no iPad stability all-clear is claimed.
+
+## Chapter Two 35.36 — tester fixes
+
+Fixes save restoration involving unrelated smaller stations and removal blocked by empty passenger queues. New optional station loops leave straight room for upgrades. Passenger alighting figures use the configured display limit. Menu > Testing: add 1000 coins provides optional testing money without changing normal fares. Reports retain save failures and additional diagnostics; Copy report remains bounded to 1600 characters. Existing railways are preserved.
+
+Long Grand Express coaches still require suitable track geometry: a longer platform does not resolve tight opposite bends. The intermittent iPad restart remains undiagnosed. Open online, close all Trainways windows and reopen; check Menu for 35.36. Do not clear website data.
