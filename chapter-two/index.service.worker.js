@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1794308375|10313991|shell-d9470d8e4564';
+const CACHE_VERSION = '1794325291|10381655|shell-78aaeb2d7af9';
 /** @type {string} */
 const CACHE_PREFIX = "Trainways-Chapter-Two-sw-cache-";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
@@ -17,7 +17,7 @@ const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = false;
 const CACHED_FILES = ["index.html","runtime-d8d50caada1810aaaea7.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","runtime-d8d50caada1810aaaea7.audio.worklet.js","runtime-d8d50caada1810aaaea7.audio.position.worklet.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
-const CACHEABLE_FILES = ["runtime-d8d50caada1810aaaea7.wasm","railway-7d0350320334db299d12.pck"];
+const CACHEABLE_FILES = ["runtime-d8d50caada1810aaaea7.wasm","railway-c6b9babef785d30fc298.pck"];
 const FULL_CACHE = CACHED_FILES.concat(CACHEABLE_FILES);
 
 self.addEventListener('install', (event) => {
