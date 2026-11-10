@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-<script>window.TRAINWAYS_DIAGNOSTICS_CONFIG={"chapter": "chapter-two", "build": "35.36", "gameKey": "trainways.diagnostics.v1.chapter_two_v35"};
+<script>window.TRAINWAYS_DIAGNOSTICS_CONFIG={"chapter": "chapter-two", "build": "35.63", "gameKey": "trainways.diagnostics.v1.chapter_two_v35"};
 /* Local-only diagnostics. Loaded before the engine so startup failures survive. */
 (() => {
   'use strict';
@@ -94,7 +94,7 @@
     if (!play) return;
     play.addEventListener('click', () => record('play_requested'));
     const box = document.createElement('details');
-    box.id = 'problem-report'; box.style.cssText = 'position:fixed;bottom:8px;left:12px;right:12px;max-height:85vh;overflow:auto;background:#fffbed;color:#294956;padding:10px;border:1px solid #6a8994;border-radius:10px;text-align:left;touch-action:pan-y;z-index:5';
+    box.id = 'problem-report'; box.style.cssText = 'margin-top:16px;background:#fffbed;color:#294956;padding:10px;border:1px solid #6a8994;border-radius:10px;text-align:left;touch-action:pan-y';
     const title = document.createElement('summary'); title.textContent = 'Report a problem'; box.appendChild(title);
     const hint = document.createElement('p'); hint.textContent = 'If the game restarted, save this report before playing again. Nothing is sent automatically.'; box.appendChild(hint);
     const text = document.createElement('textarea'); text.readOnly = true; text.rows = 7; text.style.cssText = 'width:100%;box-sizing:border-box;font-size:16px'; box.appendChild(text);
@@ -106,7 +106,9 @@
       catch (_) { copy.textContent = 'Select and copy the text above'; }
     }); box.appendChild(copy);
     box.addEventListener('toggle', () => { if (box.open) text.value = summary(); });
-    play.parentNode.parentNode.appendChild(box);
+    // Keep diagnostics in the launcher's scroll flow, including when expanded.
+    // A viewport overlay can intercept Play on short landscape screens.
+    play.parentNode.appendChild(box);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup, {once: true}); else setup();
 })();
@@ -232,7 +234,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 }
 #game-surface { position: relative; width: 100%; height: 100%; overflow: hidden; }
 #game-surface #canvas { width: 100%; height: 100%; display: block; touch-action: none; }
-#game-surface #status { overflow-y: auto; touch-action: pan-y; }
+#game-surface #status { overflow-y: auto; touch-action: pan-y; justify-content: flex-start; }
+#launch-panel { flex-shrink: 0; margin-block: auto; }
 #home-screen-tip { font-size: 14px; }
 @media (display-mode: standalone) { #home-screen-tip { display: none; } }
 
@@ -249,7 +252,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 		</noscript>
 
 		<div id="status">
-<div id="launch-panel"><h1>Trainways</h1><h2>Chapter Two · iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 51 MB.</p><p>Tap Play, then build stations, connect the railway and choose your trains.</p><p id="save-note">Your railway is preserved. Includes save/load fixes, clearer reports and optional test funds.</p><p id="home-screen-tip">On iPhone: Share → Add to Home Screen, enable Open as Web App if shown, then launch the Trainways icon for more room to play.</p><button id="play-test">Play Chapter Two</button></div>
+<div id="launch-panel"><h1>Trainways</h1><h2>Chapter Two · iPhone browser test</h2><p>Turn your phone sideways. Use Wi-Fi: the first download is about 57 MB.</p><p>Tap Play, then build stations, connect the railway and choose your trains.</p><p id="save-note">This town and industry update starts Chapter Two afresh once. New railways can be saved and continued normally.</p><p id="home-screen-tip">On iPhone: Share → Add to Home Screen, enable Open as Web App if shown, then launch the Trainways icon for more room to play.</p><button id="play-test">Play Chapter Two</button></div>
 			
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
@@ -313,14 +316,14 @@ html, body { width: 100%; height: 100%; overflow: hidden; overscroll-behavior: n
 })();
 
 </script>
-<script src="runtime-79d0e37f7ec87e22edf2.js"></script>
+<script src="runtime-d8d50caada1810aaaea7.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"runtime-79d0e37f7ec87e22edf2","experimentalVK":false,"fileSizes":{"railway-f6905dab95d83cb241c0.pck":78660856,"runtime-79d0e37f7ec87e22edf2.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js","mainPack":"railway-f6905dab95d83cb241c0.pck"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":false,"executable":"runtime-d8d50caada1810aaaea7","experimentalVK":false,"fileSizes":{"railway-7d0350320334db299d12.pck":86144812,"runtime-d8d50caada1810aaaea7.wasm":39513091},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js","mainPack":"railway-7d0350320334db299d12.pck"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
 document.getElementById('play-test').addEventListener('click', function () {
- document.getElementById('launch-panel').innerHTML='<h1>Loading Chapter Two</h1><p>First download: about 51 MB. Please keep this page open.</p>';
+ document.getElementById('launch-panel').innerHTML='<h1>Loading Chapter Two</h1><p>First download: about 57 MB. Please keep this page open.</p>';
 	const statusOverlay = document.getElementById('status');
 	const statusProgress = document.getElementById('status-progress');
 	const statusNotice = document.getElementById('status-notice');
